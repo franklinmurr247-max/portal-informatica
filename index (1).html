@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfoEdu — Portal Educativo de Informática</title>
+  <meta name="description" content="Portal educativo sobre informática: programación, redes, hardware, bases de datos y más." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0F1B2D;
+      --bg2:       #162035;
+      --bg3:       #1C2A42;
+      --cyan:      #00D4FF;
+      --green:     #00FF88;
+      --white:     #FFFFFF;
+      --muted:     #7A8FA6;
+      --card-bg:   #162035;
+      --border:    rgba(0,212,255,.15);
+      --radius:    12px;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 64px;
+      background: rgba(15,27,45,.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo span { color: var(--green); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); font-size: .9rem; text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--cyan); color: var(--bg);
+      padding: .45rem 1.2rem; border-radius: 6px;
+      font-size: .85rem; font-weight: 600; text-decoration: none;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 0 8%;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,212,255,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: .8rem; color: var(--green);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 700; line-height: 1.1;
+      max-width: 700px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      margin-top: 1.5rem;
+      color: var(--muted); font-size: 1.1rem;
+      max-width: 520px; line-height: 1.7;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; margin-top: 2.5rem; flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--cyan); color: var(--bg);
+      padding: .85rem 2rem; border-radius: 8px;
+      font-size: 1rem; font-weight: 700; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,212,255,.35); }
+    .btn-secondary {
+      border: 1.5px solid var(--border); color: var(--white);
+      padding: .85rem 2rem; border-radius: 8px;
+      font-size: 1rem; text-decoration: none;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); background: rgba(0,212,255,.06); }
+
+    /* terminal */
+    .terminal {
+      position: absolute; right: 6%; top: 50%; transform: translateY(-50%);
+      background: #0a1525;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: min(420px, 42vw);
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.5);
+    }
+    .term-bar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 14px;
+      background: #0d1d30;
+      border-bottom: 1px solid var(--border);
+    }
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .term-dot:nth-child(1) { background: #ff5f57; }
+    .term-dot:nth-child(2) { background: #febc2e; }
+    .term-dot:nth-child(3) { background: #28c840; }
+    .term-label { margin-left: auto; font-family: var(--font-mono); font-size: .7rem; color: var(--muted); }
+    .term-body { padding: 1.2rem 1.4rem; font-family: var(--font-mono); font-size: .82rem; line-height: 1.8; }
+    .term-line .prompt { color: var(--green); }
+    .term-line .cmd   { color: var(--cyan); }
+    .term-line .out   { color: #7ecfff; }
+    .term-line .com   { color: var(--muted); }
+    .term-line .ok    { color: var(--green); }
+    #cursor { display: inline-block; width: 8px; height: 1rem; background: var(--cyan); animation: blink 1s step-end infinite; vertical-align: middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── STATS ── */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-item {
+      background: var(--bg2);
+      padding: 2rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-mono);
+      font-size: 2rem; font-weight: 700;
+      color: var(--cyan);
+    }
+    .stat-label { font-size: .85rem; color: var(--muted); margin-top: .3rem; }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 8%; }
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: .75rem; color: var(--cyan);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700; line-height: 1.2;
+      max-width: 540px;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 1rem;
+      max-width: 500px; line-height: 1.7;
+      margin-top: .75rem;
+    }
+
+    /* ── TEMAS ── */
+    #temas { background: var(--bg2); }
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+    .topic-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      position: relative; overflow: hidden;
+    }
+    .topic-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--card-accent, var(--cyan));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .3s;
+    }
+    .topic-card:hover::before { transform: scaleX(1); }
+    .topic-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,212,255,.4);
+      box-shadow: 0 12px 32px rgba(0,0,0,.35);
+    }
+    .topic-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .topic-card h3 { font-size: 1.1rem; font-weight: 600; }
+    .topic-card p { font-size: .875rem; color: var(--muted); line-height: 1.6; margin-top: .5rem; }
+    .topic-count {
+      display: inline-block; margin-top: 1rem;
+      font-family: var(--font-mono); font-size: .75rem;
+      color: var(--cyan); letter-spacing: 1px;
+    }
+
+    /* ── RECURSOS ── */
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .resource-card {
+      display: flex; gap: 1.25rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-decoration: none; color: inherit;
+      transition: border-color .2s;
+    }
+    .resource-card:hover { border-color: rgba(0,255,136,.4); }
+    .resource-icon {
+      width: 48px; height: 48px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+      background: rgba(0,212,255,.1);
+    }
+    .resource-card h4 { font-size: 1rem; font-weight: 600; }
+    .resource-card p { font-size: .85rem; color: var(--muted); margin-top: .3rem; line-height: 1.5; }
+    .resource-tag {
+      display: inline-block; margin-top: .75rem;
+      background: rgba(0,255,136,.12); color: var(--green);
+      padding: .2rem .6rem; border-radius: 4px;
+      font-family: var(--font-mono); font-size: .7rem;
+    }
+
+    /* ── GLOSARIO ── */
+    #glosario { background: var(--bg2); }
+    .glosario-search {
+      display: flex; gap: .75rem; margin-top: 2rem; flex-wrap: wrap;
+    }
+    .glosario-search input {
+      flex: 1; min-width: 220px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: .75rem 1rem;
+      color: var(--white); font-size: .95rem;
+      font-family: var(--font-body); outline: none;
+      transition: border-color .2s;
+    }
+    .glosario-search input:focus { border-color: var(--cyan); }
+    .glosario-search input::placeholder { color: var(--muted); }
+    .glosario-list { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; }
+    .glosario-item {
+      display: grid; grid-template-columns: 160px 1fr;
+      gap: 1.5rem; align-items: start;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .75rem;
+    }
+    .glosario-term {
+      font-family: var(--font-mono);
+      font-size: .9rem; color: var(--cyan); font-weight: 700;
+    }
+    .glosario-def { font-size: .9rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── QUIZ ── */
+    .quiz-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      max-width: 680px;
+      margin-top: 2rem;
+    }
+    .quiz-question { font-size: 1.1rem; font-weight: 600; line-height: 1.5; }
+    .quiz-options { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
+    .quiz-opt {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 8px; padding: .85rem 1.25rem;
+      cursor: pointer; font-size: .95rem;
+      transition: border-color .2s, background .2s;
+      text-align: left;
+      color: var(--white);
+    }
+    .quiz-opt:hover { border-color: var(--cyan); background: rgba(0,212,255,.05); }
+    .quiz-opt.correct { border-color: var(--green); background: rgba(0,255,136,.08); color: var(--green); }
+    .quiz-opt.wrong   { border-color: #ff5f57; background: rgba(255,95,87,.08); color: #ff5f57; }
+    .quiz-feedback { margin-top: 1rem; font-size: .9rem; min-height: 1.2rem; }
+    .quiz-nav { display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; }
+    .btn-quiz {
+      background: var(--cyan); color: var(--bg);
+      border: none; padding: .6rem 1.5rem; border-radius: 6px;
+      font-weight: 600; cursor: pointer; font-size: .9rem;
+      transition: opacity .2s;
+    }
+    .btn-quiz:hover { opacity: .85; }
+    .quiz-prog { font-family: var(--font-mono); font-size: .8rem; color: var(--muted); margin-left: auto; }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background: linear-gradient(135deg, rgba(0,212,255,.08), rgba(0,255,136,.06));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3rem;
+      text-align: center;
+      margin: 0 8% 5rem;
+    }
+    .newsletter h2 { font-size: 1.8rem; font-weight: 700; }
+    .newsletter p { color: var(--muted); margin-top: .5rem; font-size: .95rem; }
+    .nl-form { display: flex; gap: .75rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; }
+    .nl-form input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: .75rem 1.25rem;
+      color: var(--white); font-size: .95rem;
+      font-family: var(--font-body); outline: none;
+      width: 300px; transition: border-color .2s;
+    }
+    .nl-form input:focus { border-color: var(--cyan); }
+    .nl-form input::placeholder { color: var(--muted); }
+    .nl-form button {
+      background: var(--cyan); color: var(--bg);
+      border: none; padding: .75rem 1.75rem; border-radius: 8px;
+      font-weight: 700; cursor: pointer; font-size: .95rem;
+      transition: opacity .2s;
+    }
+    .nl-form button:hover { opacity: .85; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 8%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer .logo { font-family: var(--font-mono); color: var(--cyan); font-weight: 700; }
+    footer .logo span { color: var(--green); }
+    footer p { font-size: .85rem; color: var(--muted); }
+    footer nav a { color: var(--muted); text-decoration: none; font-size: .85rem; margin-left: 1.5rem; transition: color .2s; }
+    footer nav a:hover { color: var(--white); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .terminal { display: none; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .glosario-item { grid-template-columns: 1fr; gap: .25rem; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: 2.2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Info<span>Edu</span></a>
+  <ul class="nav-links">
+    <li><a href="#temas">Temas</a></li>
+    <li><a href="#recursos">Recursos</a></li>
+    <li><a href="#glosario">Glosario</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+  <a href="#temas" class="nav-cta">Empezar →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <p class="hero-eyebrow">// Aprende. Crea. Innova.</p>
+  <h1>Tu portal de<br/><em>Informática</em><br/>educativa</h1>
+  <p class="hero-sub">Desde los fundamentos hasta programación avanzada. Contenido gratuito, claro y actualizado para estudiantes de todos los niveles.</p>
+  <div class="hero-btns">
+    <a href="#temas" class="btn-primary">Explorar temas</a>
+    <a href="#quiz" class="btn-secondary">Hacer un quiz →</a>
+  </div>
+
+  <!-- Terminal animado -->
+  <div class="terminal" aria-hidden="true">
+    <div class="term-bar">
+      <div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div>
+      <span class="term-label">terminal — InfoEdu</span>
+    </div>
+    <div class="term-body" id="termBody">
+      <div class="term-line"><span class="prompt">$</span> <span class="cmd">python3 hola_mundo.py</span></div>
+      <div class="term-line"><span class="ok">✓ Hola, Mundo!</span></div>
+      <div class="term-line">&nbsp;</div>
+      <div class="term-line"><span class="prompt">$</span> <span class="cmd">ping 192.168.1.1</span></div>
+      <div class="term-line"><span class="out">64 bytes from 192.168.1.1: time=1.2ms</span></div>
+      <div class="term-line">&nbsp;</div>
+      <div class="term-line"><span class="prompt">$</span> <span class="cmd">SELECT * FROM alumnos;</span></div>
+      <div class="term-line"><span class="out">3 rows returned in 0.004s</span></div>
+      <div class="term-line">&nbsp;</div>
+      <div class="term-line"><span class="com"># ¿Listo para aprender?</span></div>
+      <div class="term-line"><span class="prompt">$</span> <span id="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">Áreas temáticas</div></div>
+  <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Términos en el glosario</div></div>
+  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Contenido gratuito</div></div>
+  <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Conocimiento disponible</div></div>
+</div>
+
+<!-- TEMAS -->
+<section id="temas">
+  <p class="section-label">// 01 — Áreas de estudio</p>
+  <h2 class="section-title">Elige tu área de aprendizaje</h2>
+  <p class="section-sub">Cada módulo cubre conceptos esenciales con ejemplos prácticos y ejercicios.</p>
+
+  <div class="topics-grid">
+    <a href="programacion.html" class="topic-card" style="--card-accent:#00D4FF">
+      <div class="topic-icon">💻</div>
+      <h3>Programación</h3>
+      <p>Lógica de programación, algoritmos, estructuras de control y lenguajes como Python, Java y C++.</p>
+      <span class="topic-count">→ 12 lecciones</span>
+    </a>
+    <a href="redes.html" class="topic-card" style="--card-accent:#00FF88">
+      <div class="topic-icon">🌐</div>
+      <h3>Redes e Internet</h3>
+      <p>Modelos OSI y TCP/IP, protocolos, direccionamiento IP, subnetting y seguridad de redes.</p>
+      <span class="topic-count">→ 10 lecciones</span>
+    </a>
+    <a href="hardware.html" class="topic-card" style="--card-accent:#FFB800">
+      <div class="topic-icon">🖥️</div>
+      <h3>Hardware</h3>
+      <p>Componentes del computador: CPU, RAM, almacenamiento, placa madre y periféricos.</p>
+      <span class="topic-count">→ 8 lecciones</span>
+    </a>
+    <a href="bases-de-datos.html" class="topic-card" style="--card-accent:#FF6B6B">
+      <div class="topic-icon">🗄️</div>
+      <h3>Bases de Datos</h3>
+      <p>Modelo relacional, SQL, diseño de bases de datos, normalización y sistemas gestores (MySQL, SQLite).</p>
+      <span class="topic-count">→ 9 lecciones</span>
+    </a>
+    <a href="sistemas-operativos.html" class="topic-card" style="--card-accent:#B388FF">
+      <div class="topic-icon">⚙️</div>
+      <h3>Sistemas Operativos</h3>
+      <p>Gestión de procesos, memoria, archivos. Windows, Linux y la línea de comandos.</p>
+      <span class="topic-count">→ 7 lecciones</span>
+    </a>
+    <a href="web.html" class="topic-card" style="--card-accent:#FF9A3C">
+      <div class="topic-icon">🌍</div>
+      <h3>Desarrollo Web</h3>
+      <p>HTML, CSS y JavaScript desde cero. Crea tus primeras páginas web funcionales y estéticas.</p>
+      <span class="topic-count">→ 14 lecciones</span>
+    </a>
+    <a href="seguridad.html" class="topic-card" style="--card-accent:#00D4FF">
+      <div class="topic-icon">🔐</div>
+      <h3>Ciberseguridad</h3>
+      <p>Conceptos de seguridad informática, tipos de amenazas, criptografía básica y buenas prácticas.</p>
+      <span class="topic-count">→ 6 lecciones</span>
+    </a>
+    <a href="ofimática.html" class="topic-card" style="--card-accent:#00FF88">
+      <div class="topic-icon">📊</div>
+      <h3>Ofimática</h3>
+      <p>Microsoft Office y LibreOffice: Word, Excel, PowerPoint. Fórmulas, macros y productividad.</p>
+      <span class="topic-count">→ 11 lecciones</span>
+    </a>
+  </div>
+</section>
+
+<!-- RECURSOS -->
+<section id="recursos">
+  <p class="section-label">// 02 — Material de apoyo</p>
+  <h2 class="section-title">Recursos para tu aprendizaje</h2>
+  <p class="section-sub">Guías, resúmenes y herramientas para reforzar lo que estudias en clase.</p>
+
+  <div class="resources-grid">
+    <a href="#" class="resource-card">
+      <div class="resource-icon">📄</div>
+      <div>
+        <h4>Guía de Algoritmos</h4>
+        <p>Pseudocódigo, diagramas de flujo y ejercicios resueltos paso a paso.</p>
+        <span class="resource-tag">PDF · Gratis</span>
+      </div>
+    </a>
+    <a href="#" class="resource-card">
+      <div class="resource-icon">🗂️</div>
+      <div>
+        <h4>Tabla de Comandos Linux</h4>
+        <p>Los 50 comandos más usados en terminal con ejemplos y explicaciones.</p>
+        <span class="resource-tag">PDF · Gratis</span>
+      </div>
+    </a>
+    <a href="#" class="resource-card">
+      <div class="resource-icon">📐</div>
+      <div>
+        <h4>Calculadora de Subredes</h4>
+        <p>Herramienta interactiva para practicar subnetting y máscaras de red.</p>
+        <span class="resource-tag">Web App</span>
+      </div>
+    </a>
+    <a href="#" class="resource-card">
+      <div class="resource-icon">🧩</div>
+      <div>
+        <h4>Ejercicios de SQL</h4>
+        <p>Banco de ejercicios prácticos de bases de datos con soluciones explicadas.</p>
+        <span class="resource-tag">PDF · Gratis</span>
+      </div>
+    </a>
+    <a href="#" class="resource-card">
+      <div class="resource-icon">🎥</div>
+      <div>
+        <h4>Videotutoriales de Python</h4>
+        <p>Serie de videos desde variables y listas hasta funciones y archivos.</p>
+        <span class="resource-tag">YouTube</span>
+      </div>
+    </a>
+    <a href="#" class="resource-card">
+      <div class="resource-icon">📋</div>
+      <div>
+        <h4>Plantillas de HTML/CSS</h4>
+        <p>Layouts listos para usar y practicar diseño web responsivo desde el primer día.</p>
+        <span class="resource-tag">ZIP · Gratis</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- GLOSARIO -->
+<section id="glosario">
+  <p class="section-label">// 03 — Diccionario</p>
+  <h2 class="section-title">Glosario de Informática</h2>
+  <p class="section-sub">Busca cualquier término técnico y encuentra su definición clara y sencilla.</p>
+
+  <div class="glosario-search">
+    <input type="text" id="glosSearch" placeholder="Buscar término... (ej: RAM, protocolo, SQL)" oninput="filterGlosario()" />
+  </div>
+
+  <div class="glosario-list" id="glosarioList">
+    <!-- Generado por JS -->
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <p class="section-label">// 04 — Pon a prueba tu conocimiento</p>
+  <h2 class="section-title">Quiz de Informática</h2>
+  <p class="section-sub">Preguntas de opción múltiple para reforzar lo aprendido.</p>
+
+  <div class="quiz-box">
+    <div class="quiz-question" id="qText">Cargando pregunta...</div>
+    <div class="quiz-options" id="qOptions"></div>
+    <div class="quiz-feedback" id="qFeedback"></div>
+    <div class="quiz-nav">
+      <button class="btn-quiz" id="btnNext" onclick="nextQuestion()" style="display:none">Siguiente →</button>
+      <span class="quiz-prog" id="qProg"></span>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <h2>📬 Mantente actualizado</h2>
+  <p>Recibe nuevos temas, recursos y quizes directamente en tu correo.</p>
+  <div class="nl-form">
+    <input type="email" placeholder="tu@correo.com" />
+    <button onclick="this.textContent='✓ Suscrito!'">Suscribirme</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Info<span>Edu</span></div>
+  <p>© 2025 InfoEdu · Portal Educativo de Informática · Contenido libre para uso educativo</p>
+  <nav>
+    <a href="#temas">Temas</a>
+    <a href="#recursos">Recursos</a>
+    <a href="#quiz">Quiz</a>
+  </nav>
+</footer>
+
+<script>
+/* ── GLOSARIO ── */
+const terminos = [
+  { t: 'Algoritmo',     d: 'Conjunto de pasos ordenados y finitos para resolver un problema.' },
+  { t: 'API',           d: 'Interfaz de Programación de Aplicaciones. Permite la comunicación entre diferentes softwares.' },
+  { t: 'Bit',           d: 'Unidad mínima de información en computación; puede ser 0 ó 1.' },
+  { t: 'Byte',          d: 'Conjunto de 8 bits. Unidad básica para medir capacidad de almacenamiento.' },
+  { t: 'CPU',           d: 'Unidad Central de Procesamiento. El "cerebro" del computador que ejecuta instrucciones.' },
+  { t: 'DNS',           d: 'Sistema de Nombres de Dominio. Traduce nombres de dominio (google.com) a direcciones IP.' },
+  { t: 'Encriptación',  d: 'Proceso de transformar datos en un formato ilegible para protegerlos de acceso no autorizado.' },
+  { t: 'Firewall',      d: 'Sistema de seguridad que controla el tráfico de red, bloqueando accesos no autorizados.' },
+  { t: 'HTML',          d: 'Lenguaje de Marcado de Hipertexto. Estructura el contenido de las páginas web.' },
+  { t: 'IP',            d: 'Protocolo de Internet. Identifica de forma única a cada dispositivo en una red (ej: 192.168.1.1).' },
+  { t: 'JavaScript',    d: 'Lenguaje de programación que añade interactividad y comportamiento a las páginas web.' },
+  { t: 'Kernel',        d: 'Núcleo del sistema operativo. Gestiona los recursos del hardware y la comunicación con el software.' },
+  { t: 'LAN',           d: 'Red de Área Local. Red que conecta dispositivos en un área geográfica pequeña (oficina, escuela).' },
+  { t: 'Malware',       d: 'Software malicioso diseñado para dañar o acceder ilegalmente a sistemas informáticos.' },
+  { t: 'Nube (Cloud)',  d: 'Modelo de computación que ofrece servicios (almacenamiento, procesamiento) a través de Internet.' },
+  { t: 'Phishing',      d: 'Técnica de engaño para obtener datos confidenciales haciéndose pasar por una entidad confiable.' },
+  { t: 'RAM',           d: 'Memoria de Acceso Aleatorio. Almacena datos temporalmente mientras el computador está encendido.' },
+  { t: 'SQL',           d: 'Lenguaje de Consulta Estructurado para gestionar y consultar bases de datos relacionales.' },
+  { t: 'TCP/IP',        d: 'Conjunto de protocolos que definen cómo se transmiten los datos por Internet.' },
+  { t: 'URL',           d: 'Localizador Uniforme de Recursos. Dirección que identifica un recurso en la web (ej: https://...).' },
+  { t: 'Variable',      d: 'Espacio en memoria con un nombre que almacena un valor que puede cambiar durante la ejecución.' },
+  { t: 'Virus',         d: 'Programa malicioso que se replica e infecta archivos de un sistema sin consentimiento del usuario.' },
+  { t: 'WAN',           d: 'Red de Área Amplia. Conecta redes LAN a grandes distancias, como Internet.' },
+  { t: 'Wi-Fi',         d: 'Tecnología de red inalámbrica que permite conectar dispositivos a Internet sin cables.' },
+  { t: 'XML',           d: 'Lenguaje de marcado extensible para almacenar y transportar datos de forma legible.' },
+];
+
+function renderGlosario(lista) {
+  const el = document.getElementById('glosarioList');
+  el.innerHTML = lista.map(g => `
+    <div class="glosario-item">
+      <span class="glosario-term">${g.t}</span>
+      <span class="glosario-def">${g.d}</span>
+    </div>`).join('');
+}
+function filterGlosario() {
+  const q = document.getElementById('glosSearch').value.toLowerCase();
+  renderGlosario(q ? terminos.filter(g => g.t.toLowerCase().includes(q) || g.d.toLowerCase().includes(q)) : terminos);
+}
+renderGlosario(terminos);
+
+/* ── QUIZ ── */
+const preguntas = [
+  { q: '¿Qué significa la sigla "CPU"?', opts: ['Control Power Unit','Central Processing Unit','Computer Processing Unit','Central Program Utility'], ans: 1, exp: 'CPU = Central Processing Unit (Unidad Central de Procesamiento). Es el procesador principal del computador.' },
+  { q: '¿Cuántos bits tiene un byte?', opts: ['4','16','8','32'], ans: 2, exp: 'Un byte equivale a 8 bits. Es la unidad básica de almacenamiento digital.' },
+  { q: '¿Cuál es la función principal del DNS?', opts: ['Asignar RAM a procesos','Traducir nombres de dominio a IPs','Encriptar datos','Conectar redes LAN'], ans: 1, exp: 'El DNS traduce nombres como "google.com" a direcciones IP numéricas que los routers pueden utilizar.' },
+  { q: '¿Qué tipo de memoria es la RAM?', opts: ['Permanente','Óptica','Volátil (temporal)','Magnética'], ans: 2, exp: 'La RAM es volátil: sus datos se pierden cuando se apaga el computador. Por eso se usa para procesos activos.' },
+  { q: '¿Cuál lenguaje se usa principalmente para estructurar páginas web?', opts: ['Python','SQL','HTML','Java'], ans: 2, exp: 'HTML (HyperText Markup Language) define la estructura y el contenido de las páginas web.' },
+  { q: 'En el modelo OSI, ¿en qué capa trabaja el protocolo IP?', opts: ['Física','Enlace de datos','Red','Transporte'], ans: 2, exp: 'IP opera en la Capa 3 (Red) del modelo OSI, encargándose del direccionamiento y enrutamiento de paquetes.' },
+  { q: '¿Qué es el phishing?', opts: ['Un tipo de firewall','Una técnica de engaño para robar datos','Un protocolo de red','Un lenguaje de programación'], ans: 1, exp: 'El phishing es un ataque de ingeniería social donde el atacante se hace pasar por una entidad confiable.' },
+  { q: '¿Qué hace la instrucción SQL SELECT?', opts: ['Borra registros','Inserta datos','Consulta y recupera datos','Crea tablas'], ans: 2, exp: 'SELECT se usa para leer datos de una tabla: SELECT * FROM tabla WHERE condición.' },
+];
+
+let qIdx = 0, score = 0, answered = false;
+
+function loadQuestion() {
+  const p = preguntas[qIdx];
+  document.getElementById('qText').textContent = p.q;
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('btnNext').style.display = 'none';
+  document.getElementById('qProg').textContent = `${qIdx + 1} / ${preguntas.length}`;
+  answered = false;
+
+  const optsEl = document.getElementById('qOptions');
+  optsEl.innerHTML = p.opts.map((o, i) => `
+    <button class="quiz-opt" onclick="answer(${i})">${o}</button>
+  `).join('');
+}
+
+function answer(i) {
+  if (answered) return;
+  answered = true;
+  const p = preguntas[qIdx];
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach(b => b.disabled = true);
+  btns[p.ans].classList.add('correct');
+  const fb = document.getElementById('qFeedback');
+  if (i === p.ans) {
+    score++;
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✓ ¡Correcto! ' + p.exp;
+  } else {
+    btns[i].classList.add('wrong');
+    fb.style.color = '#ff5f57';
+    fb.textContent = '✗ Incorrecto. ' + p.exp;
+  }
+  document.getElementById('btnNext').style.display = 'inline-block';
+  if (qIdx === preguntas.length - 1) {
+    document.getElementById('btnNext').textContent = 'Ver resultado 🎉';
+  }
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= preguntas.length) {
+    const pct = Math.round(score / preguntas.length * 100);
+    const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '📚';
+    document.querySelector('.quiz-box').innerHTML = `
+      <div style="text-align:center;padding:1rem">
+        <div style="font-size:3rem;margin-bottom:1rem">${emoji}</div>
+        <div style="font-size:1.5rem;font-weight:700">Obtuviste ${score} / ${preguntas.length}</div>
+        <div style="color:var(--muted);margin:.5rem 0 1.5rem">${pct}% de respuestas correctas</div>
+        <div style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem">
+          ${pct >= 80 ? '¡Excelente dominio del tema!' : pct >= 50 ? 'Buen intento, repasa los temas que fallaste.' : 'Te recomendamos repasar las lecciones antes de intentarlo de nuevo.'}
+        </div>
+        <button class="btn-quiz" onclick="qIdx=0;score=0;document.querySelector('.quiz-box').innerHTML='';loadQuestion();document.querySelector('.quiz-box').innerHTML='<div class=quiz-question id=qText></div><div class=quiz-options id=qOptions></div><div class=quiz-feedback id=qFeedback></div><div class=quiz-nav><button class=btn-quiz id=btnNext onclick=nextQuestion() style=display:none>Siguiente →</button><span class=quiz-prog id=qProg></span></div>';loadQuestion()">
+          Intentar de nuevo
+        </button>
+      </div>`;
+    return;
+  }
+  loadQuestion();
+}
+loadQuestion();
+</script>
+</body>
+</html>
